@@ -46,16 +46,17 @@ public class MatriculaService {
     }
 
 
-    private  void calcMedia(Matricula matricula){
+    private  Double calcMedia(Matricula matricula){
        Double nota1 = matricula.getNota1();
        Double nota2 = matricula.getNota2();
+       Double media;
 
         if (nota2 != null && nota1 != null) {
-            double media = (nota1 + nota2)/2;
+             media = (nota1 + nota2)/2;
             matricula.setStatus(media >= MEDIA_PARA_APROVAÇÃO ? Status.APROVADO : Status.REPROVADO);
+            return media;
         }
-
-
+        return null;
     }
 
     public HistoryResponse generateHistory(Long alunoId){
@@ -78,13 +79,8 @@ public class MatriculaService {
             disciplinaAluno.setNota1(matricula.getNota1());
             disciplinaAluno.setNota2    (matricula.getNota2());
 
-            if (matricula.getNota1() != null && matricula.getNota2() != null) {
-                double media = (matricula.getNota1() + matricula.getNota2())/2;
-                disciplinaAluno.setMedia(media);
-                disciplinaAluno.setStatus(media >= MEDIA_PARA_APROVAÇÃO ? Status.APROVADO : Status.REPROVADO);
-            }else {
-                disciplinaAluno.setMedia(null);
-            }
+            disciplinaAluno.setMedia(calcMedia(matricula));
+            disciplinaAluno.setStatus(matricula.getStatus());
             disciplinaList.add(disciplinaAluno);
         }
         history.setDisciplinaResponseList(disciplinaList);
